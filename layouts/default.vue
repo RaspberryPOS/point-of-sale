@@ -31,9 +31,7 @@
         </v-btn>
       </v-app-bar>
       <v-main>
-        <v-container>
-          <Nuxt />
-        </v-container>
+        <Nuxt />
       </v-main>
       <OrderSideBar :show="rightDrawer" />
     </fullscreen>
@@ -50,14 +48,14 @@ export default {
       drawer: false,
       items: [
         {
-          icon: 'mdi-apps',
-          title: 'Welcome',
+          icon: 'mdi-food',
+          title: 'Menu',
           to: '/',
         },
         {
-          icon: 'mdi-chart-bubble',
-          title: 'Inspire',
-          to: '/inspire',
+          icon: 'mdi-hamburger',
+          title: 'À la carte',
+          to: '/',
         },
       ],
       rightDrawer: true,

@@ -1,32 +1,30 @@
 <template>
-  <v-row justify="center" align="center">
-    <v-col cols="12" sm="8" md="6">
-      <v-card>
-        <v-card-title class="headline">
-          Welcome to the Vuetify + Nuxt.js template
-        </v-card-title>
-        <v-card-text>
-          <p>
-            Vuetify is a progressive Material Design component framework for
-            Vue.js. It was designed to empower developers to create amazing
-            applications.
-          </p>
-          <div class="text-xs-right">
-            <em><small>&mdash; John Leider</small></em>
-          </div>
-          <hr class="my-3" />
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn color="primary" nuxt to="/inspire"> Continue </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-col>
-  </v-row>
+  <v-layout pa-2 style="height: 95vh; overflow-y: auto; overflow-x: clip">
+    <v-row>
+      <v-col class="mt-2" cols="12">
+        <h2 class="text-uppercase primary--text">Combos</h2>
+      </v-col>
+
+      <v-col v-for="food in foods" :key="food.id" cols="6" md="4">
+        <FoodTile
+          :name="food.name"
+          :description="food.description"
+          :available="food.available"
+          :price="parseFloat(food.price)"
+        />
+      </v-col>
+    </v-row>
+  </v-layout>
 </template>
 
 <script>
 export default {
   name: 'IndexPage',
+  async asyncData(context) {
+    const foods = await context.app.$axios.$get(
+      'http://192.168.1.84:8080/menuItem'
+    )
+    return { foods }
+  },
 }
 </script>
