@@ -1,5 +1,5 @@
 <template>
-  <v-card :color="available ? '' : 'grey lighten-2'">
+  <v-card :color="available ? '' : 'grey lighten-2'" height="100%">
     <v-card-title>
       {{ name }}
     </v-card-title>
