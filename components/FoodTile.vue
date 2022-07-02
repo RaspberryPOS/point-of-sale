@@ -16,7 +16,7 @@
     </v-card-text>
     <v-card-actions>
       <v-chip :color="item.available ? 'green' : 'red'" outlined small>
-        <span v-if="available">
+        <span v-if="item.available">
           <v-icon small>mdi-check</v-icon>
           Available
         </span>
@@ -32,7 +32,7 @@
         :disabled="!item.available"
         fab
         color="primary"
-        @click="addToOrder(item)"
+        @click="addToOrder(JSON.parse(JSON.stringify(item)))"
       >
         <v-icon>mdi-plus</v-icon>
       </v-btn>
@@ -50,7 +50,7 @@ export default {
   },
   methods: {
     addToOrder(item) {
-      item.hash = Date.now()
+      item.hash = Number(Date.now())
       this.$store.commit('order/ADD_ITEM', item)
     },
   },
