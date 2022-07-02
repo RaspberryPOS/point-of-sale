@@ -19,7 +19,12 @@
       </v-flex>
       <v-flex class="flex overflow-auto grey darken-4">
         <v-list subheader two-line class="mt-1">
-          <v-list-item v-for="item in order" :key="item.hash">
+          <v-list-item v-for="item in order" :key="item.hash" class="pl-0">
+            <v-list-item-action class="pl-1 pr-1 ma-0">
+              <v-btn icon @click="removeItem(item.hash)">
+                <v-icon color="grey lighten-1">mdi-minus-circle-outline</v-icon>
+              </v-btn>
+            </v-list-item-action>
             <v-list-item-content>
               <v-list-item-title class="subtitle-2">{{
                 item.name
@@ -154,6 +159,9 @@ export default {
   methods: {
     clearOrder() {
       this.$store.commit('order/CLEAR_ORDER')
+    },
+    removeItem(itemHash) {
+      this.$store.commit('order/REMOVE_ITEM', itemHash)
     },
   },
 }

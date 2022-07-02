@@ -51,6 +51,9 @@ export default {
   methods: {
     addToOrder(item) {
       item.hash = Number(Date.now())
+      // Check if MenuItem or Food being added
+      if ('foods' in item) item.type = 'MenuItem'
+      else item.type = 'Food'
       this.$store.commit('order/ADD_ITEM', item)
     },
   },
