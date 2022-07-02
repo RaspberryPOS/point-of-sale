@@ -3,6 +3,17 @@
     <fullscreen v-model="fullscreen">
       <v-navigation-drawer v-model="drawer" :clipped="clipped" fixed app>
         <v-list>
+          <v-list-item>
+            <v-select
+              v-model="selectedMenu"
+              :items="menus"
+              item-text="name"
+              item-value="id"
+              label="Menu"
+              return-object
+            ></v-select>
+          </v-list-item>
+
           <v-list-item
             v-for="(item, i) in items"
             :key="i"
@@ -45,17 +56,22 @@ export default {
     return {
       fullscreen: false,
       clipped: true,
-      drawer: false,
+      drawer: true,
       items: [
         {
-          icon: 'mdi-food',
-          title: 'Menu',
+          icon: 'mdi-order-bool-descending-variant',
+          title: 'Orders',
           to: '/',
         },
         {
+          icon: 'mdi-food',
+          title: 'Menu',
+          to: '/menu',
+        },
+        {
           icon: 'mdi-hamburger',
-          title: 'À la carte',
-          to: '/',
+          title: 'All Foods',
+          to: '/all-foods',
         },
       ],
       rightDrawer: true,
@@ -64,6 +80,22 @@ export default {
   },
   head: {
     title: 'Home',
+  },
+  computed: {
+    selectedMenu: {
+      get: function () {
+        return this.$store.state.menu.selectedMenu
+      },
+      set: function (newValue) {
+        this.$store.dispatch('menu/setSelectedMenu', newValue)
+      },
+    },
+    menus() {
+      return this.$store.state.menu.menus
+    },
+  },
+  async created() {
+    await this.$store.dispatch('menu/getMenus')
   },
   methods: {
     makeFullscreen() {

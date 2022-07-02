@@ -24,6 +24,7 @@ export default {
   plugins: [
     '~/plugins/vue-fullscreen.client.js',
     '~/plugins/vue-money-format.client.js',
+    '~/plugins/api.client.js',
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -50,7 +51,7 @@ export default {
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
     // Workaround to avoid enforcing hard-coded localhost:3000: https://github.com/nuxt-community/axios-module/issues/308
-    baseURL: '/',
+    baseURL: 'http://192.168.1.84:8080/',
   },
 
   // PWA module configuration: https://go.nuxtjs.dev/pwa

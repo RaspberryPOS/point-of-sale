@@ -12,7 +12,7 @@
       >
       </MoneyFormat>
     </v-card-subtitle>
-    <v-card-text>
+    <v-card-text height="100%">
       {{ description }}
     </v-card-text>
     <v-card-actions>
