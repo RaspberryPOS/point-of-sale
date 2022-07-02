@@ -50,21 +50,6 @@
 
       <v-flex class="flex shrink pb-2">
         <v-toolbar color="rgba(0,0,0,0)" flat>
-          <strong>Subtotal</strong><v-spacer></v-spacer
-          ><strong>
-            <MoneyFormat
-              :value="total"
-              locale="en"
-              currency-code="USD"
-              :subunits-value="false"
-            />
-          </strong>
-        </v-toolbar>
-        <v-toolbar color="rgba(0,0,0,0)" flat class="mt-n6">
-          <span>Tax</span><v-spacer></v-spacer><span>$0.00</span>
-        </v-toolbar>
-        <v-divider class="mx-4"></v-divider>
-        <v-toolbar color="rgba(0,0,0,0)" flat>
           <strong>Total</strong><v-spacer></v-spacer
           ><strong>
             <MoneyFormat
