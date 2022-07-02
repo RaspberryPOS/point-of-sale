@@ -1,7 +1,7 @@
 <template>
   <v-app dark>
     <fullscreen v-model="fullscreen">
-      <v-navigation-drawer v-model="drawer" :clipped="clipped" fixed app>
+      <v-navigation-drawer v-model="leftDrawer" :clipped="clipped" fixed app>
         <v-list>
           <v-list-item>
             <v-select
@@ -31,7 +31,7 @@
         </v-list>
       </v-navigation-drawer>
       <v-app-bar :clipped-left="clipped" fixed app>
-        <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
+        <v-app-bar-nav-icon @click.stop="leftDrawer = !leftDrawer" />
         <v-toolbar-title v-text="title" />
         <v-spacer />
         <v-btn v-if="!fullscreen" icon @click="makeFullscreen">
@@ -56,7 +56,8 @@ export default {
     return {
       fullscreen: false,
       clipped: true,
-      drawer: true,
+      leftDrawer: true,
+      rightDrawer: true,
       items: [
         {
           icon: 'mdi-order-bool-descending-variant',
@@ -74,7 +75,6 @@ export default {
           to: '/all-foods',
         },
       ],
-      rightDrawer: true,
       title: 'RaspberryPOS',
     }
   },
@@ -92,6 +92,14 @@ export default {
     },
     menus() {
       return this.$store.state.menu.menus
+    },
+  },
+  watch: {
+    leftDrawer() {
+      // Open right drawer when left drawer closes
+      if (!this.leftDrawer) {
+        this.rightDrawer = true
+      }
     },
   },
   async created() {

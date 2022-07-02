@@ -25,20 +25,22 @@ export const actions = {
       // Store menus
       commit('SET_MENUS', res.data)
 
-      // Set selectedMenu to first enabled one
-      let foundActiveMenu = false
-      for (const menu of res.data) {
-        if (menu.active) {
-          await dispatch('setSelectedMenu', menu)
-          foundActiveMenu = true
-          break
+      // Set selectedMenu to first enabled one if not already set
+      if (this.selectedMenu === undefined) {
+        let foundActiveMenu = false
+        for (const menu of res.data) {
+          if (menu.active) {
+            await dispatch('setSelectedMenu', menu)
+            foundActiveMenu = true
+            break
+          }
         }
+        // Default to first in list
+        if (!foundActiveMenu && res.data.length > 0)
+          await dispatch('setSelectedMenu', res.data[0])
+      } else {
+        alert("Couldn't load Menus, refresh the page and try again.")
       }
-      // Default to first in list
-      if (!foundActiveMenu && res.data.length > 0)
-        await dispatch('setSelectedMenu', res.data[0])
-    } else {
-      alert("Couldn't load Menus, refresh the page and try again.")
     }
   },
 

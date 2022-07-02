@@ -10,7 +10,7 @@
               >
             </v-list-item-content>
             <v-list-item-action>
-              <v-btn fab small color="red">
+              <v-btn fab small color="red" @click="clearOrder">
                 <v-icon color="white">mdi-cancel</v-icon>
               </v-btn>
             </v-list-item-action>
@@ -19,126 +19,26 @@
       </v-flex>
       <v-flex class="flex overflow-auto grey darken-4">
         <v-list subheader two-line class="mt-1">
-          <v-list-item>
+          <v-list-item v-for="item in order" :key="item.hash">
             <v-list-item-content>
-              <v-list-item-title class="subtitle-2"
-                >Chicken Sandwhich Combo with Fries</v-list-item-title
-              >
+              <v-list-item-title class="subtitle-2">{{
+                item.name
+              }}</v-list-item-title>
               <v-list-item-subtitle> Sauce: Red Sauce </v-list-item-subtitle>
               <v-list-item-subtitle>
                 Toppings: Lettuce, Tomato
               </v-list-item-subtitle>
               <v-list-item-subtitle> Request: No bun </v-list-item-subtitle>
             </v-list-item-content>
-            <v-list-item-action class="caption">$3.95</v-list-item-action>
-            <v-list-item-action>
-              <v-btn icon>
-                <v-icon color="grey lighten-1">mdi-note-edit</v-icon>
-              </v-btn>
+            <v-list-item-action class="caption">
+              <MoneyFormat
+                :value="parseFloat(item.price)"
+                locale="en"
+                currency-code="USD"
+                :subunits-value="false"
+              >
+              </MoneyFormat>
             </v-list-item-action>
-          </v-list-item>
-          <v-list-item>
-            <v-list-item-content>
-              <v-list-item-title class="subtitle-2"
-                >Chicken Sandwhich Combo with Fries</v-list-item-title
-              >
-              <v-list-item-subtitle> Sauce: Red Sauce </v-list-item-subtitle>
-              <v-list-item-subtitle>
-                Toppings: Lettuce, Tomato
-              </v-list-item-subtitle>
-              <v-list-item-subtitle> Request: No bun </v-list-item-subtitle>
-            </v-list-item-content>
-            <v-list-item-action class="caption">$3.95</v-list-item-action>
-            <v-list-item-action>
-              <v-btn icon>
-                <v-icon color="grey lighten-1">mdi-note-edit</v-icon>
-              </v-btn>
-            </v-list-item-action>
-          </v-list-item>
-          <v-list-item>
-            <v-list-item-content>
-              <v-list-item-title class="subtitle-2"
-                >Chicken Sandwhich Combo with Fries</v-list-item-title
-              >
-              <v-list-item-subtitle> Sauce: Red Sauce </v-list-item-subtitle>
-              <v-list-item-subtitle>
-                Toppings: Lettuce, Tomato
-              </v-list-item-subtitle>
-              <v-list-item-subtitle> Request: No bun </v-list-item-subtitle>
-            </v-list-item-content>
-            <v-list-item-action class="caption">$3.95</v-list-item-action>
-            <v-list-item-action>
-              <v-btn icon>
-                <v-icon color="grey lighten-1">mdi-note-edit</v-icon>
-              </v-btn>
-            </v-list-item-action>
-          </v-list-item>
-          <v-list-item>
-            <v-list-item-content>
-              <v-list-item-title class="subtitle-2"
-                >Chicken Sandwhich Combo with Fries</v-list-item-title
-              >
-              <v-list-item-subtitle> Sauce: Red Sauce </v-list-item-subtitle>
-              <v-list-item-subtitle>
-                Toppings: Lettuce, Tomato
-              </v-list-item-subtitle>
-              <v-list-item-subtitle> Request: No bun </v-list-item-subtitle>
-            </v-list-item-content>
-            <v-list-item-action class="caption">$3.95</v-list-item-action>
-            <v-list-item-action>
-              <v-btn icon>
-                <v-icon color="grey lighten-1">mdi-note-edit</v-icon>
-              </v-btn>
-            </v-list-item-action>
-          </v-list-item>
-          <v-list-item>
-            <v-list-item-content>
-              <v-list-item-title class="subtitle-2"
-                >Chicken Sandwhich Combo with Fries</v-list-item-title
-              >
-              <v-list-item-subtitle> Sauce: Red Sauce </v-list-item-subtitle>
-              <v-list-item-subtitle>
-                Toppings: Lettuce, Tomato
-              </v-list-item-subtitle>
-              <v-list-item-subtitle> Request: No bun </v-list-item-subtitle>
-            </v-list-item-content>
-            <v-list-item-action class="caption">$3.95</v-list-item-action>
-            <v-list-item-action>
-              <v-btn icon>
-                <v-icon color="grey lighten-1">mdi-note-edit</v-icon>
-              </v-btn>
-            </v-list-item-action>
-          </v-list-item>
-          <v-list-item>
-            <v-list-item-content>
-              <v-list-item-title class="subtitle-2"
-                >Chicken Sandwhich Combo with Fries</v-list-item-title
-              >
-              <v-list-item-subtitle> Sauce: Red Sauce </v-list-item-subtitle>
-              <v-list-item-subtitle>
-                Toppings: Lettuce, Tomato
-              </v-list-item-subtitle>
-              <v-list-item-subtitle> Request: No bun </v-list-item-subtitle>
-            </v-list-item-content>
-            <v-list-item-action class="caption">$3.95</v-list-item-action>
-            <v-list-item-action>
-              <v-btn icon>
-                <v-icon color="grey lighten-1">mdi-note-edit</v-icon>
-              </v-btn>
-            </v-list-item-action>
-          </v-list-item>
-          <v-list-item>
-            <v-list-item-content>
-              <v-list-item-title class="subtitle-2"
-                >Chicken Sandwhich Combo with Fries</v-list-item-title
-              >
-              <v-list-item-subtitle> Sauce: Red Sauce </v-list-item-subtitle>
-              <v-list-item-subtitle>
-                Toppings: Lettuce, Tomato
-              </v-list-item-subtitle>
-              <v-list-item-subtitle> Request: No bun </v-list-item-subtitle>
-            </v-list-item-content>
-            <v-list-item-action class="caption">$3.95</v-list-item-action>
             <v-list-item-action>
               <v-btn icon>
                 <v-icon color="grey lighten-1">mdi-note-edit</v-icon>
@@ -150,14 +50,30 @@
 
       <v-flex class="flex shrink pb-2">
         <v-toolbar color="rgba(0,0,0,0)" flat>
-          <strong>Subtotal</strong><v-spacer></v-spacer><strong>$18.31</strong>
+          <strong>Subtotal</strong><v-spacer></v-spacer
+          ><strong>
+            <MoneyFormat
+              :value="total"
+              locale="en"
+              currency-code="USD"
+              :subunits-value="false"
+            />
+          </strong>
         </v-toolbar>
         <v-toolbar color="rgba(0,0,0,0)" flat class="mt-n6">
-          <span>Tax</span><v-spacer></v-spacer><span>$1.83</span>
+          <span>Tax</span><v-spacer></v-spacer><span>$0.00</span>
         </v-toolbar>
         <v-divider class="mx-4"></v-divider>
         <v-toolbar color="rgba(0,0,0,0)" flat>
-          <strong>Total</strong><v-spacer></v-spacer><strong>$20.14</strong>
+          <strong>Total</strong><v-spacer></v-spacer
+          ><strong>
+            <MoneyFormat
+              :value="total"
+              locale="en"
+              currency-code="USD"
+              :subunits-value="false"
+            />
+          </strong>
         </v-toolbar>
         <v-item-group mandatory class="mt-n1">
           <v-container>
@@ -237,6 +153,23 @@
 export default {
   props: {
     show: Boolean,
+  },
+  computed: {
+    order() {
+      return this.$store.state.order.items
+    },
+    total() {
+      let total = 0
+      for (const i in this.order) {
+        total += parseFloat(this.order[i].price)
+      }
+      return total
+    },
+  },
+  methods: {
+    clearOrder() {
+      this.$store.commit('order/CLEAR_ORDER')
+    },
   },
 }
 </script>

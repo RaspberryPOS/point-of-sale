@@ -11,12 +11,7 @@
         </v-col>
 
         <v-col v-for="item in category.items" :key="item.id" cols="6" md="4">
-          <FoodTile
-            :name="item.name"
-            :description="item.description"
-            :available="item.available"
-            :price="parseFloat(item.price)"
-          />
+          <FoodTile :item="item" />
         </v-col>
       </v-row>
     </v-container>
@@ -44,14 +39,16 @@ export default {
       this.sortMenuItems()
     },
   },
-  created() {
+  async created() {
+    if (this.$store.state.menu.selectedMenu !== undefined)
+      await this.$store.dispatch('menuItem/getMenuItems')
     // Sort already saved Vuex MenuItems
     this.sortMenuItems()
   },
   methods: {
     // Sorts VuexStore menu items by Category for display on page
     sortMenuItems() {
-      const itemsByCategory = {}
+      let itemsByCategory = {}
       for (const i in this.menuItems) {
         // Check if category already exists
         if (this.menuItems[i].category in itemsByCategory) {
@@ -68,6 +65,15 @@ export default {
           )
         }
       }
+
+      // Order keys in itemsByCategory by Category
+      itemsByCategory = Object.keys(itemsByCategory)
+        .sort()
+        .reduce((obj, key) => {
+          obj[key] = itemsByCategory[key]
+          return obj
+        }, {})
+
       this.menuItemsByCategory = itemsByCategory
     },
   },
