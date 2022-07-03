@@ -1,5 +1,5 @@
 <template>
-  <v-layout pa-2 style="height: 94vh; overflow-y: auto; overflow-x: clip">
+  <v-layout style="height: 94vh; overflow-y: auto; overflow-x: clip">
     <v-container>
       <v-row
         v-for="category in menuItemsByCategory"
@@ -7,10 +7,18 @@
         col="12"
       >
         <v-col class="mt-2" cols="12">
-          <h2 class="text-uppercase primary--text">{{ category.id }}</h2>
+          <h2 class="text-uppercase font-weight-light primary--text">
+            {{ category.id }}
+          </h2>
         </v-col>
 
-        <v-col v-for="item in category.items" :key="item.id" cols="6" md="4">
+        <v-col
+          v-for="item in category.items"
+          :key="item.id"
+          cols="6"
+          md="4"
+          class="d-flex flex-column ma-0 pa-0"
+        >
           <FoodTile :item="item" />
         </v-col>
       </v-row>

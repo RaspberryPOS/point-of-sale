@@ -104,6 +104,7 @@ export default {
   },
   async created() {
     await this.$store.dispatch('menu/getMenus')
+    await this.$store.dispatch('food/getFoods')
   },
   methods: {
     makeFullscreen() {
