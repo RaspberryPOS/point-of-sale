@@ -71,7 +71,7 @@
               <v-col>
                 <v-item v-slot="{ active, toggle }">
                   <v-card
-                    :color="active ? 'primary' : ''"
+                    :color="active ? 'grey lighten-2' : ''"
                     class="d-flex align-center rounded-lg"
                     height="70"
                     flat
@@ -82,12 +82,12 @@
                         <v-list-item three-line class="text-center mt-1">
                           <v-list-item-content>
                             <div>
-                              <v-icon :color="active ? 'white' : 'primary'"
+                              <v-icon :color="active ? 'black' : 'white'"
                                 >mdi-cash-100</v-icon
                               >
                             </div>
                             <v-list-item-subtitle
-                              :class="active ? 'white--text' : 'primary--text'"
+                              :class="active ? 'black--text' : 'white--text'"
                               class="mt-n2 caption"
                               >Cash</v-list-item-subtitle
                             >
@@ -101,7 +101,7 @@
               <v-col>
                 <v-item v-slot="{ active, toggle }">
                   <v-card
-                    :color="active ? 'primary' : ''"
+                    :color="active ? 'grey lighten-2' : ''"
                     class="d-flex align-center rounded-lg"
                     height="70"
                     flat
@@ -112,12 +112,12 @@
                         <v-list-item three-line class="text-center mt-1">
                           <v-list-item-content>
                             <div>
-                              <v-icon :color="active ? 'white' : 'primary'"
+                              <v-icon :color="active ? 'black' : 'white'"
                                 >mdi-credit-card</v-icon
                               >
                             </div>
                             <v-list-item-subtitle
-                              :class="active ? 'white--text' : 'primary--text'"
+                              :class="active ? 'black--text' : 'white--text'"
                               class="mt-n2 caption"
                               >Card</v-list-item-subtitle
                             >
