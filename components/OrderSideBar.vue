@@ -48,7 +48,9 @@
               <!-- Selected Options -->
               <div v-if="item.type === 'MenuItem'">
                 <div v-for="food in item.foods" :key="food.id">
-                  <h5 class="pl-9 primary--text">{{ food.name }}</h5>
+                  <h5 v-if="item.foods.length > 1" class="pl-9 primary--text">
+                    {{ food.name }}
+                  </h5>
                   <OrderSideBarDetail :food="food" />
                 </div>
               </div>
@@ -173,7 +175,9 @@
 
         <!-- Submit Order -->
         <div class="mx-3 mt-2">
-          <v-btn block large color="success" height="70">Submit Order</v-btn>
+          <v-btn block large color="success" height="70" @click="submitOrder"
+            >Submit Order</v-btn
+          >
         </div>
       </v-flex>
     </v-layout>
@@ -196,6 +200,9 @@ export default {
     },
     removeItem(itemHash) {
       this.$store.commit('order/REMOVE_ITEM', itemHash)
+    },
+    submitOrder() {
+      console.log(this.order)
     },
   },
 }
