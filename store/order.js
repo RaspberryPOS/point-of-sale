@@ -1,6 +1,39 @@
+/* eslint-disable no-unused-vars */
 export const state = () => ({
   items: [],
 })
+
+function optionPrice(rootState, option) {
+  // Get all selected prepOptions
+  const prepOpts = option.prepOpts
+    .filter((opt) => opt.selected)
+    .map((i) => (i.price ? { price: i.price, qty: i.quantity } : {}))
+  // Get all selected foodOptions; map to actual food cost if no override present
+  const foodOpts = option.foodOpts
+    .filter((opt) => opt.selected)
+    .map((i) =>
+      i.price
+        ? { price: i.price, qty: i.quantity }
+        : { price: rootState.food.foodsById[i.foodId].price, qty: i.quantity }
+    )
+  // Combine all selected opts and expand each price*qty, sort, remove first .freeQty cheapest options
+  const allOpts = [...foodOpts, ...prepOpts]
+    .map(function (i) {
+      const retArray = []
+      for (let j = 0; j < i.qty; j++) {
+        retArray.push(i.price)
+      }
+      return retArray
+    })
+    .flat()
+    .sort()
+    .slice(option.freeQty)
+  // Calculates the price of options
+  return allOpts.reduce(
+    (partialSum, optionPrice) => partialSum + parseFloat(optionPrice),
+    0
+  )
+}
 
 export const mutations = {
   CLEAR_ORDER(state) {
@@ -19,4 +52,44 @@ export const mutations = {
   },
 }
 
-export const actions = {}
+export const actions = {
+  addOrderItem({ commit, rootState }, item) {
+    item.hash = Number(Date.now())
+
+    //  Calcuate cost of each option
+    if (item.type === 'MenuItem') {
+      for (const j in item.foods) {
+        for (const i in item.foods[j].options)
+          item.foods[j].options[i].optionsPrice = optionPrice(
+            rootState,
+            item.foods[j].options[i]
+          )
+      }
+      // Calcuate cost of MenuItem + Selected Options
+      item.totalPrice =
+        parseFloat(item.price) +
+        item.foods.reduce(
+          (sum, food) =>
+            sum +
+            food.options.reduce(
+              (partialSum, option) => partialSum + option.optionsPrice,
+              0
+            ),
+          0
+        )
+    } else {
+      // Calculate cost of each selected options
+      for (const i in item.options)
+        item.options[i].optionsPrice = optionPrice(rootState, item.options[i])
+      // Calcuate total cost of order item
+      item.totalPrice =
+        parseFloat(item.price) +
+        item.options.reduce(
+          (partialSum, option) => partialSum + option.optionsPrice,
+          0
+        )
+    }
+
+    commit('ADD_ITEM', item)
+  },
+}

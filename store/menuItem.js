@@ -4,6 +4,9 @@ export const state = () => ({
 
 export const mutations = {
   SET_MENUITEMS(state, menuItems) {
+    for (const i in menuItems) {
+      menuItems[i].type = 'MenuItem'
+    }
     state.menuItems = menuItems
   },
 }

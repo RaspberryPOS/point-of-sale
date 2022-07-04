@@ -17,34 +17,65 @@
           </v-list-item>
         </v-list>
       </v-flex>
+
+      <!-- List of Items in Order -->
       <v-flex class="flex overflow-auto grey darken-4">
         <v-list subheader two-line class="mt-1">
-          <v-list-item v-for="item in order" :key="item.hash" class="pl-0">
+          <v-list-item v-for="item in order" :key="item.hash" class="pl-0 pr-1">
+            <!-- Remove from Order Button -->
             <v-list-item-action class="pl-1 pr-1 ma-0">
               <v-btn icon @click="removeItem(item.hash)">
-                <v-icon color="grey lighten-1">mdi-minus-circle-outline</v-icon>
+                <v-icon color="red">mdi-minus-circle-outline</v-icon>
               </v-btn>
             </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title class="subtitle-2">{{
-                item.name
-              }}</v-list-item-title>
-              <v-list-item-subtitle> Sauce: Red Sauce </v-list-item-subtitle>
-              <v-list-item-subtitle>
-                Toppings: Lettuce, Tomato
+
+            <!-- Item info -->
+            <v-list-item-content class="mr-1">
+              <!-- Item name -->
+              <v-list-item-title
+                class="subtitle-1 font-weight-bold accent--text text--lighten-1"
+              >
+                <MoneyFormat
+                  :value="parseFloat(item.price)"
+                  locale="en"
+                  currency-code="USD"
+                  :subunits-value="false"
+                  style="display: inline"
+                  class="font-weight-light green--text caption"
+                />{{ item.name }}
+              </v-list-item-title>
+
+              <!-- Selected Options -->
+              <div v-if="item.type === 'MenuItem'">
+                <div v-for="food in item.foods" :key="food.id">
+                  <h5 class="pl-9 primary--text">{{ food.name }}</h5>
+                  <OrderSideBarDetail :food="food" />
+                </div>
+              </div>
+              <div v-else>
+                <OrderSideBarDetail :food="item" />
+              </div>
+
+              <!-- Special Requests -->
+              <v-list-item-subtitle v-if="item.notes">
+                <strong class="orange--text">Special Requests: </strong
+                >{{ item.notes }}
               </v-list-item-subtitle>
-              <v-list-item-subtitle> Request: No bun </v-list-item-subtitle>
             </v-list-item-content>
-            <v-list-item-action class="caption">
+
+            <!-- Show total price of item -->
+            <v-list-item-action class="font-weight-light green--text">
               <MoneyFormat
-                :value="parseFloat(item.price)"
+                :value="item.totalPrice"
                 locale="en"
                 currency-code="USD"
                 :subunits-value="false"
               >
               </MoneyFormat>
             </v-list-item-action>
-            <v-list-item-action>
+
+            <!-- Edit item button -->
+            <v-list-item-action class="ml-1">
               <v-btn icon>
                 <v-icon color="grey lighten-1">mdi-note-edit</v-icon>
               </v-btn>
@@ -54,17 +85,25 @@
       </v-flex>
 
       <v-flex class="flex shrink pb-2">
+        <!-- Show Total -->
         <v-toolbar color="rgba(0,0,0,0)" flat>
           <strong>Total</strong><v-spacer></v-spacer
           ><strong>
             <MoneyFormat
-              :value="total"
+              :value="
+                order.reduce(
+                  (partialSum, item) => partialSum + item.totalPrice,
+                  0
+                )
+              "
               locale="en"
               currency-code="USD"
               :subunits-value="false"
             />
           </strong>
         </v-toolbar>
+
+        <!-- Payment Method Selector -->
         <v-item-group mandatory class="mt-n1">
           <v-container>
             <v-row justify="center">
@@ -131,6 +170,8 @@
             </v-row>
           </v-container>
         </v-item-group>
+
+        <!-- Submit Order -->
         <div class="mx-3 mt-2">
           <v-btn block large color="success" height="70">Submit Order</v-btn>
         </div>
@@ -147,13 +188,6 @@ export default {
   computed: {
     order() {
       return this.$store.state.order.items
-    },
-    total() {
-      let total = 0
-      for (const i in this.order) {
-        total += parseFloat(this.order[i].price)
-      }
-      return total
     },
   },
   methods: {

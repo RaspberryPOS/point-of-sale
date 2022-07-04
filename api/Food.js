@@ -4,7 +4,7 @@ export default ($axios) => ({
     return $axios.get(`${resource}`)
   },
 
-  show(id) {
+  get(id) {
     return $axios.get(`${resource}/${id}`)
   },
 })

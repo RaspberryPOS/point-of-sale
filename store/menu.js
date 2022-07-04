@@ -14,6 +14,7 @@ export const mutations = {
 
 export const actions = {
   async getMenus({ commit, dispatch }) {
+    // Get all Menus
     const res = await this.$api.menu.all()
     if (res.status === 200 && res.data) {
       // Sort Menus by Name and Active state
