@@ -65,37 +65,41 @@
         </v-list-item>
 
         <v-list-item
-          v-for="food in opt.foodOpts"
-          :key="food.foodId"
-          v-model="food.selected"
-          :disabled="!foodsById[food.foodId].available"
+          v-for="relatedFood in opt.foodOpts"
+          :key="relatedFood.foodId"
+          v-model="relatedFood.selected"
+          :disabled="!foodsById[relatedFood.foodId].available"
         >
           <template #default="{ active }">
             <v-list-item-action>
               <v-checkbox
                 :input-value="active"
                 color="primary"
-                :disabled="!foodsById[food.foodId].available"
+                :disabled="!foodsById[relatedFood.foodId].available"
               />
             </v-list-item-action>
 
             <v-list-item-content>
               <v-list-item-title>{{
-                foodsById[food.foodId].name
+                foodsById[relatedFood.foodId].name
               }}</v-list-item-title>
-              <v-list-item-subtitle v-if="foodsById[food.foodId].available">
+              <v-list-item-subtitle
+                v-if="foodsById[relatedFood.foodId].available"
+              >
                 <span class="font-weight-light green--text"
                   ><MoneyFormat
                     style="display: inline"
                     :value="
-                      parseFloat(food.price || foodsById[food.foodId].price)
+                      parseFloat(
+                        relatedFood.price || foodsById[relatedFood.foodId].price
+                      )
                     "
                     locale="en"
                     currency-code="USD"
                     :subunits-value="false"
                 /></span>
-                <span v-if="foodsById[food.foodId].description">
-                  - {{ foodsById[food.foodId].description }}</span
+                <span v-if="foodsById[relatedFood.foodId].description">
+                  - {{ foodsById[relatedFood.foodId].description }}</span
                 >
               </v-list-item-subtitle>
               <v-list-item-subtitle v-else>
@@ -106,16 +110,18 @@
             </v-list-item-content>
 
             <v-list-item-action
-              v-if="opt.multiOrder && foodsById[food.foodId].available"
+              v-if="opt.multiOrder && foodsById[relatedFood.foodId].available"
               @click.stop
             >
               <div class="flex">
                 <v-btn
-                  :disabled="!food.selected"
+                  :disabled="!relatedFood.selected"
                   depressed
                   color="error"
                   v-on="
-                    food.quantity > 1 ? { click: () => food.quantity-- } : {}
+                    relatedFood.quantity > 1
+                      ? { click: () => relatedFood.quantity-- }
+                      : {}
                   "
                 >
                   <v-icon>mdi-minus</v-icon>
@@ -127,7 +133,7 @@
                   :disabled="!food.selected"
                   depressed
                   color="success"
-                  @click="food.quantity++"
+                  @click="relatedFood.quantity++"
                 >
                   <v-icon>mdi-plus</v-icon>
                 </v-btn>
