@@ -144,6 +144,10 @@
       </v-list-item-group>
       <v-divider />
     </v-list>
+    <v-subheader>
+      <strong>Special Requests</strong>
+    </v-subheader>
+    <v-textarea v-model="notes" outlined class="pl-4 pr-4" />
   </div>
 </template>
 
@@ -156,7 +160,9 @@ export default {
     },
   },
   data() {
-    return {}
+    return {
+      notes: '',
+    }
   },
   computed: {
     foodsById() {

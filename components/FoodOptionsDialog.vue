@@ -29,18 +29,11 @@
         <div v-else>
           <FoodOptionList :food="modifiedItem" />
         </div>
-
-        <h2
-          class="pl-3 pt-3 pb-3 text-uppercase font-weight-light primary--text"
-        >
-          <b>Special Requests</b>
-        </h2>
-        <v-textarea v-model="modifiedItem.notes" outlined class="pl-4 pr-4" />
       </v-card-text>
 
       <v-divider />
       <v-card-actions>
-        <v-spacer></v-spacer>
+        <v-spacer />
         <v-btn color="primary" @click="save">
           <span v-if="orderItemId">Update</span>
           <span v-else>Add to Order</span>
