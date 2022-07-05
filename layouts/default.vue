@@ -98,14 +98,6 @@ export default {
       return this.$store.state.menu.menus
     },
   },
-  watch: {
-    leftDrawer() {
-      // Open right drawer when left drawer closes
-      if (!this.leftDrawer) {
-        this.rightDrawer = true
-      }
-    },
-  },
   async created() {
     await this.$store.dispatch('menu/getMenus')
     await this.$store.dispatch('food/getFoods')
