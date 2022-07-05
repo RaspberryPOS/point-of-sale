@@ -86,7 +86,6 @@ export default {
     visible() {
       if (this.visible) {
         this.modifiedItem = JSON.parse(JSON.stringify(this.item))
-        // Add selected and qty fields to prepOpts and foodOpts if not present
       }
     },
   },
