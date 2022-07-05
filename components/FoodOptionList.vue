@@ -126,11 +126,11 @@
                 >
                   <v-icon>mdi-minus</v-icon>
                 </v-btn>
-                <v-chip label outlined :disabled="!food.selected">
-                  {{ food.quantity }}
+                <v-chip label outlined :disabled="!relatedFood.selected">
+                  {{ relatedFood.quantity }}
                 </v-chip>
                 <v-btn
-                  :disabled="!food.selected"
+                  :disabled="!relatedFood.selected"
                   depressed
                   color="success"
                   @click="relatedFood.quantity++"
