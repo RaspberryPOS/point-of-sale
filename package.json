@@ -27,7 +27,7 @@
     "vue": "^2.7.1",
     "vue-fullscreen": "^2.6.1",
     "vue-money-format": "^1.2.4",
-    "vue-server-renderer": "^2.7.1",
+    "vue-server-renderer": "^2.7.2",
     "vue-template-compiler": "^2.7.1",
     "vuetify": "^2.6.1",
     "webpack": "^4.46.0"
