@@ -38,6 +38,8 @@ export default {
     '@nuxtjs/stylelint-module',
     // https://go.nuxtjs.dev/vuetify
     '@nuxtjs/vuetify',
+    // https://www.npmjs.com/package/@nuxtjs/moment
+    '@nuxtjs/moment',
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
@@ -46,6 +48,8 @@ export default {
     '@nuxtjs/axios',
     // https://go.nuxtjs.dev/pwa
     '@nuxtjs/pwa',
+    // https://www.npmjs.com/package/vuetify-dialog
+    'vuetify-dialog/nuxt',
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
@@ -59,6 +63,11 @@ export default {
     manifest: {
       lang: 'en',
     },
+  },
+
+  // moment.js options
+  moment: {
+    /* module options */
   },
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
