@@ -175,7 +175,13 @@
 
         <!-- Submit Order -->
         <div class="mx-3 mt-2">
-          <v-btn block large color="success" height="70" @click="submitOrder"
+          <v-btn
+            block
+            large
+            :disabled="order.length == 0"
+            color="success"
+            height="70"
+            @click="submitOrder"
             >Submit Order</v-btn
           >
         </div>
@@ -195,14 +201,28 @@ export default {
     },
   },
   methods: {
-    clearOrder() {
-      this.$store.commit('order/CLEAR_ORDER')
+    async clearOrder() {
+      const confirm = await this.$dialog.confirm({
+        text: 'Do you really want to clear the current order?',
+        title: 'Clear Order',
+        actions: {
+          false: { text: 'No', large: true, flat: false },
+          true: { text: 'Yes', color: 'primary', large: true, flat: false },
+        },
+      })
+      if (confirm) {
+        this.$store.commit('order/CLEAR_ORDER')
+        this.$dialog.notify.info(`Order cleared`, {
+          position: 'bottom-left',
+          timeout: 5000,
+        })
+      }
     },
     removeItem(itemHash) {
       this.$store.commit('order/REMOVE_ITEM', itemHash)
     },
     submitOrder() {
-      console.log(this.order)
+      alert(JSON.stringify(this.order))
     },
   },
 }
