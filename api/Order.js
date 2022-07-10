@@ -10,12 +10,14 @@ export default ($axios) => ({
   cancel(id) {
     const payload = {
       cancelled: true,
+      completedAt: new Date(),
     }
     return $axios.patch(`${resource}/${id}`, payload)
   },
   complete(id) {
     const payload = {
       complete: true,
+      completedAt: new Date(),
     }
     return $axios.patch(`${resource}/${id}`, payload)
   },
