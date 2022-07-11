@@ -119,7 +119,6 @@ export default {
         }
 
         // Done!
-        console.log(order)
         result[order.id] = order
         return result
       },

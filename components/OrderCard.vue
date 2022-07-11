@@ -304,7 +304,6 @@ export default {
         // Add to list
         list = list.concat(categoryOrderItems)
       }
-      console.log(list)
       return list
     },
     orderStatusColor() {
