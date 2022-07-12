@@ -39,7 +39,7 @@ export const mutations = {
     state.items = []
   },
   ADD_ITEM(state, item) {
-    state.items.push(item)
+    state.items.push(JSON.parse(JSON.stringify(item)))
   },
   REMOVE_ITEM(state, itemHash) {
     for (const i in state.items) {

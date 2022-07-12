@@ -169,7 +169,5 @@ export default {
       return this.$store.state.food.foodsById
     },
   },
-  watch: {},
-  methods: {},
 }
 </script>

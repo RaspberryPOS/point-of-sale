@@ -49,6 +49,7 @@
         <Nuxt />
       </v-main>
       <OrderSideBar :show="rightDrawer" />
+      <FoodOptionsDialog />
     </fullscreen>
   </v-app>
 </template>

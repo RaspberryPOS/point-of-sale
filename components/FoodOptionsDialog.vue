@@ -7,7 +7,7 @@
   >
     <v-card>
       <v-card-title class="primary white--text">
-        {{ modifiedItem.name }}
+        {{ item.name }}
         <v-spacer />
         <v-btn icon dark @click="showDialog = false">
           <v-icon>mdi-close</v-icon>
@@ -15,19 +15,19 @@
       </v-card-title>
       <v-divider />
       <v-card-text>
-        <div v-if="modifiedItem.type === 'MenuItem'">
-          <div v-for="food in modifiedItem.foods" :key="food.id">
+        <div v-if="item.type === 'MenuItem'">
+          <div v-for="food in item.foods" :key="food.id">
             <h2
-              v-if="modifiedItem.foods.length > 1"
+              v-if="item.foods.length > 1"
               class="pl-3 pt-3 text-uppercase font-weight-light primary--text"
             >
               <b>{{ food.name }}</b> Options
             </h2>
-            <FoodOptionList :food="food" />
+            <FoodOptionList :key="Date()" :food="food" />
           </div>
         </div>
         <div v-else>
-          <FoodOptionList :food="modifiedItem" />
+          <FoodOptionList :key="Date()" :food="item" />
         </div>
       </v-card-text>
 
@@ -35,7 +35,7 @@
       <v-card-actions>
         <v-spacer />
         <v-btn color="primary" @click="save">
-          <span v-if="orderItemId">Update</span>
+          <span v-if="false">Update</span>
           <span v-else>Add to Order</span>
         </v-btn>
       </v-card-actions>
@@ -47,46 +47,27 @@
 import FoodOptionList from './FoodOptionList.vue'
 export default {
   components: { FoodOptionList },
-  props: {
-    orderItemId: {
-      type: Number,
-      default: NaN,
-    },
-    item: {
-      type: Object,
-      required: true,
-    },
-    visible: Boolean,
-  },
   data() {
     return {
-      modifiedItem: {},
+      showDialog: false,
+      item: {},
+      orderItemId: false,
     }
   },
-  computed: {
-    showDialog: {
-      get() {
-        return this.visible
-      },
-      set(value) {
-        if (!value) {
-          this.$emit('close')
-        }
-      },
-    },
-  },
-  watch: {
-    visible() {
-      if (this.visible) {
-        this.modifiedItem = JSON.parse(JSON.stringify(this.item))
-      }
-    },
+  mounted() {
+    this.$root.$on('showFoodOptionsDialog', ({ item }) => {
+      this.item = item
+      // Sort foods by name if present (passed a MenuItem)
+      if (this.item.foods)
+        this.item.foods.sort((a, b) => (a.name > b.name ? 1 : -1))
+      this.showDialog = true
+    })
   },
   methods: {
     save() {
       // Add net new order item if this isn't an "edit" dialog
       if (!this.orderItemId) {
-        this.$store.dispatch('order/addOrderItem', this.modifiedItem)
+        this.$store.dispatch('order/addOrderItem', this.item)
       }
       // Close dialog
       this.showDialog = false

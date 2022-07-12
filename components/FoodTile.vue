@@ -50,11 +50,6 @@
         </v-badge>
       </v-card-actions>
     </v-card>
-    <FoodOptionsDialog
-      :item="item"
-      :visible="showOptionsDialog"
-      @close="showOptionsDialog = false"
-    />
   </v-container>
 </template>
 
@@ -65,11 +60,6 @@ export default {
       type: Object,
       required: true,
     },
-  },
-  data() {
-    return {
-      showOptionsDialog: false,
-    }
   },
   computed: {
     itemAvailable() {
@@ -122,11 +112,15 @@ export default {
     addToOrderButton() {
       // Show option selector dialog if item has options
       if (this.itemHasOptions) {
-        this.showOptionsDialog = true
+        this.$root.$emit('showFoodOptionsDialog', {
+          item: JSON.parse(JSON.stringify(this.item)),
+        })
       } else {
         // Make copy of item to add to Vuex Store
-        const orderItem = JSON.parse(JSON.stringify(this.item))
-        this.$store.dispatch('order/addOrderItem', orderItem)
+        this.$store.dispatch(
+          'order/addOrderItem',
+          JSON.parse(JSON.stringify(this.item))
+        )
       }
     },
   },
