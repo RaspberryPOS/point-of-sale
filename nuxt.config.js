@@ -21,11 +21,7 @@ export default {
   css: [],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: [
-    '~/plugins/vue-fullscreen.client.js',
-    '~/plugins/vue-money-format.client.js',
-    '~/plugins/api.client.js',
-  ],
+  plugins: ['~/plugins/vue-money-format.client.js', '~/plugins/api.client.js'],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,

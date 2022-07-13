@@ -1,6 +1,6 @@
 <template>
-  <v-layout style="height: 94vh; overflow-y: auto; overflow-x: clip">
-    <v-container>
+  <v-layout>
+    <v-container flex style="overflow-x: auto">
       <v-row v-for="category in foodsByCategory" :key="category.id" col="12">
         <v-col class="mt-2" cols="12">
           <h2 class="text-uppercase font-weight-light primary--text">

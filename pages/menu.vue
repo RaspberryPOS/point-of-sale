@@ -1,6 +1,6 @@
 <template>
-  <v-layout style="height: 94vh; overflow-y: auto; overflow-x: clip">
-    <v-container>
+  <v-layout>
+    <v-container flex style="overflow-x: auto">
       <v-row
         v-for="category in menuItemsByCategory"
         :key="category.id"
