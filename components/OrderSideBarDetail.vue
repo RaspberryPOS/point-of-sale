@@ -33,10 +33,13 @@
         >{{
           opt.prepOpts
             .filter((opt) => opt.selected)
-            .map((i) => `${i.quantity > 0 ? i.quantity + 'x ' : ''}${i.name}`)
+            .map((i) => `${i.quantity > 1 ? i.quantity + 'x ' : ''}${i.name}`)
             .join(', ')
         }}
       </span>
+    </v-list-item-subtitle>
+    <v-list-item-subtitle v-if="food.notes" class="pl-9 pb-1">
+      <strong class="orange--text">Notes: </strong>{{ food.notes }}
     </v-list-item-subtitle>
   </div>
 </template>

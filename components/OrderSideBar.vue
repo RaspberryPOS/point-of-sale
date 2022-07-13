@@ -57,12 +57,6 @@
               <div v-else>
                 <OrderSideBarDetail :food="item" />
               </div>
-
-              <!-- Special Requests -->
-              <v-list-item-subtitle v-if="item.notes">
-                <strong class="orange--text">Special Requests: </strong
-                >{{ item.notes }}
-              </v-list-item-subtitle>
             </v-list-item-content>
 
             <!-- Show total price of item -->
@@ -79,7 +73,9 @@
             <!-- Edit item button -->
             <v-list-item-action class="ml-1">
               <v-btn icon>
-                <v-icon color="grey lighten-1">mdi-note-edit</v-icon>
+                <v-icon color="grey lighten-1" @click="editItem(item.hash)"
+                  >mdi-note-edit</v-icon
+                >
               </v-btn>
             </v-list-item-action>
           </v-list-item>
@@ -212,14 +208,13 @@ export default {
       })
       if (confirm) {
         this.$store.commit('order/CLEAR_ORDER')
-        this.$dialog.notify.info(`Order cleared`, {
-          position: 'bottom-left',
-          timeout: 5000,
-        })
       }
     },
     removeItem(itemHash) {
       this.$store.commit('order/REMOVE_ITEM', itemHash)
+    },
+    editItem(itemHash) {
+      this.$root.$emit('showFoodOptionsDialog', { itemHash })
     },
     submitOrder() {
       alert(JSON.stringify(this.order))

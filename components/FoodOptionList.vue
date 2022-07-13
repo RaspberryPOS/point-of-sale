@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-mutating-props -->
 <template>
   <div>
     <v-list v-for="opt in food.options" :key="opt.id" subheader two-line flat>
@@ -12,11 +13,16 @@
         </span>
       </v-subheader>
 
-      <v-list-item-group :multiple="opt.multiselect">
+      <v-list-item-group
+        v-if="selectedOpts[opt.id]"
+        v-model="selectedOpts[opt.id]['prepOpts']"
+        :multiple="opt.multiselect"
+      >
         <v-list-item
           v-for="prep in opt.prepOpts"
           :key="prep.id"
-          v-model="prep.selected"
+          :value="prep.id"
+          @click="selectedOptsClicked++"
         >
           <template #default="{ active }">
             <v-list-item-action>
@@ -39,7 +45,9 @@
             <v-list-item-action v-if="opt.multiOrder" @click.stop>
               <div class="flex">
                 <v-btn
-                  :disabled="!prep.selected"
+                  :disabled="
+                    !selectedOpts[opt.id]['prepOpts'].includes(prep.id)
+                  "
                   depressed
                   color="error"
                   v-on="
@@ -48,11 +56,19 @@
                 >
                   <v-icon>mdi-minus</v-icon>
                 </v-btn>
-                <v-chip label outlined :disabled="!prep.selected">
+                <v-chip
+                  label
+                  outlined
+                  :disabled="
+                    !selectedOpts[opt.id]['prepOpts'].includes(prep.id)
+                  "
+                >
                   {{ prep.quantity }}
                 </v-chip>
                 <v-btn
-                  :disabled="!prep.selected"
+                  :disabled="
+                    !selectedOpts[opt.id]['prepOpts'].includes(prep.id)
+                  "
                   depressed
                   color="success"
                   @click="prep.quantity++"
@@ -63,12 +79,19 @@
             </v-list-item-action>
           </template>
         </v-list-item>
+      </v-list-item-group>
 
+      <v-list-item-group
+        v-if="selectedOpts[opt.id]"
+        v-model="selectedOpts[opt.id]['foodOpts']"
+        :multiple="opt.multiselect"
+      >
         <v-list-item
           v-for="relatedFood in opt.foodOpts"
-          :key="relatedFood.foodId"
-          v-model="relatedFood.selected"
+          :key="relatedFood.id"
+          :value="relatedFood.id"
           :disabled="!foodsById[relatedFood.foodId].available"
+          @click="selectedOptsClicked++"
         >
           <template #default="{ active }">
             <v-list-item-action>
@@ -115,7 +138,9 @@
             >
               <div class="flex">
                 <v-btn
-                  :disabled="!relatedFood.selected"
+                  :disabled="
+                    !selectedOpts[opt.id]['foodOpts'].includes(relatedFood.id)
+                  "
                   depressed
                   color="error"
                   v-on="
@@ -126,11 +151,19 @@
                 >
                   <v-icon>mdi-minus</v-icon>
                 </v-btn>
-                <v-chip label outlined :disabled="!relatedFood.selected">
+                <v-chip
+                  label
+                  outlined
+                  :disabled="
+                    !selectedOpts[opt.id]['foodOpts'].includes(relatedFood.id)
+                  "
+                >
                   {{ relatedFood.quantity }}
                 </v-chip>
                 <v-btn
-                  :disabled="!relatedFood.selected"
+                  :disabled="
+                    !selectedOpts[opt.id]['foodOpts'].includes(relatedFood.id)
+                  "
                   depressed
                   color="success"
                   @click="relatedFood.quantity++"
@@ -142,12 +175,13 @@
           </template>
         </v-list-item>
       </v-list-item-group>
+
       <v-divider />
     </v-list>
     <v-subheader>
       <strong>Special Requests</strong>
     </v-subheader>
-    <v-textarea v-model="notes" outlined class="pl-4 pr-4" />
+    <v-textarea v-model="food.notes" outlined class="pl-4 pr-4" />
   </div>
 </template>
 
@@ -161,13 +195,77 @@ export default {
   },
   data() {
     return {
-      notes: '',
+      selectedOpts: {},
+      selectedOptsClicked: 0,
     }
   },
   computed: {
     foodsById() {
       return this.$store.state.food.foodsById
     },
+  },
+  watch: {
+    // Clicking on v-list-item increments the counter, allowing us to trigger updating the
+    // underlying food prop with the selected items
+    selectedOptsClicked() {
+      // iterate each option id
+      this.food?.options?.forEach((opt) => {
+        // Set each foodOpt to be (not) selected according to selectedOpts
+        opt.foodOpts.map((o) => {
+          if (
+            (this.selectedOpts[opt.id]?.foodOpts?.constructor.name ===
+              'Array' &&
+              this.selectedOpts[opt.id]?.foodOpts?.includes(o.id)) ||
+            this.selectedOpts[opt.id]?.foodOpts === o.id
+          )
+            o.selected = true
+          else o.selected = false
+          return o
+        })
+        opt.prepOpts.map((o) => {
+          if (
+            (this.selectedOpts[opt.id]?.prepOpts?.constructor.name ===
+              'Array' &&
+              this.selectedOpts[opt.id].prepOpts.includes(o.id)) ||
+            this.selectedOpts[opt.id].prepOpts === o.id
+          )
+            o.selected = true
+          else o.selected = false
+          return o
+        })
+      })
+    },
+  },
+  created() {
+    // Check if foodNotes in food and add key if needed
+    if (!('notes' in this.food)) {
+      // eslint-disable-next-line vue/no-mutating-props
+      this.food.notes = ''
+    }
+    // Process food options and sotre selected opt ids to array for use in v-list-item-group's
+    this.food?.options?.forEach((opt) => {
+      this.selectedOpts[opt.id] = {}
+      // Iterate through foodOpts
+      this.selectedOpts[opt.id].foodOpts = opt.foodOpts
+        .filter((o) => o.selected)
+        .map((o) => {
+          return o.id
+        })
+      // Select first foodOpt if multiselect not allowed -> converting the property to a string instead of array in process
+      if (!opt.multiselect && this.selectedOpts[opt.id].foodOpts.length > 0)
+        this.selectedOpts[opt.id].foodOpts =
+          this.selectedOpts[opt.id].foodOpts[0]
+
+      // Same for prepOpts
+      this.selectedOpts[opt.id].prepOpts = opt.prepOpts
+        .filter((o) => o.selected)
+        .map((o) => {
+          return o.id
+        })
+      if (!opt.multiselect && this.selectedOpts[opt.id].prepOpts.length > 0)
+        this.selectedOpts[opt.id].prepOpts =
+          this.selectedOpts[opt.id].prepOpts[0]
+    })
   },
 }
 </script>

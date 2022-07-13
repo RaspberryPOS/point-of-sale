@@ -14,7 +14,7 @@
         </v-btn>
       </v-card-title>
       <v-divider />
-      <v-card-text>
+      <v-card-text ref="optionList" class="pa-0">
         <div v-if="item.type === 'MenuItem'">
           <div v-for="food in item.foods" :key="food.id">
             <h2
@@ -35,7 +35,7 @@
       <v-card-actions>
         <v-spacer />
         <v-btn color="primary" @click="save">
-          <span v-if="false">Update</span>
+          <span v-if="itemHash">Update</span>
           <span v-else>Add to Order</span>
         </v-btn>
       </v-card-actions>
@@ -51,23 +51,46 @@ export default {
     return {
       showDialog: false,
       item: {},
-      orderItemId: false,
+      itemHash: null,
     }
   },
   mounted() {
-    this.$root.$on('showFoodOptionsDialog', ({ item }) => {
-      this.item = item
-      // Sort foods by name if present (passed a MenuItem)
-      if (this.item.foods)
-        this.item.foods.sort((a, b) => (a.name > b.name ? 1 : -1))
+    this.$root.$on('showFoodOptionsDialog', ({ item, itemHash }) => {
+      // Cleanup any old data
+      this.itemHash = null
+      this.item = {}
+      // If we got itemHash, we're editing, not creating new, find item in store
+      if (itemHash) {
+        this.itemHash = itemHash
+        // Find Order Item in store matching the provided hash
+        for (const i in this.$store.state.order.items) {
+          if (this.$store.state.order.items[i].hash === itemHash) {
+            this.item = JSON.parse(
+              JSON.stringify(this.$store.state.order.items[i])
+            ) // Make a copy so we can edit in place
+            break
+          }
+        }
+      } else {
+        this.item = item
+        // Sort foods by name if present (passed a MenuItem)
+        if (this.item.foods)
+          this.item.foods.sort((a, b) =>
+            a.name > b.name && b.options.length > a.options.length ? 1 : -1
+          )
+      }
       this.showDialog = true
+      if ('optionList' in this.$refs)
+        this.$vuetify.goTo(0, { container: this.$refs.optionList })
     })
   },
   methods: {
     save() {
       // Add net new order item if this isn't an "edit" dialog
-      if (!this.orderItemId) {
+      if (!this.itemHash) {
         this.$store.dispatch('order/addOrderItem', this.item)
+      } else {
+        this.$store.dispatch('order/updateOrderItem', this.item)
       }
       // Close dialog
       this.showDialog = false
