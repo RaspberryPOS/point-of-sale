@@ -58,6 +58,7 @@ export default {
   pwa: {
     manifest: {
       lang: 'en',
+      name: 'RaspberryPOS',
     },
   },
 
