@@ -24,10 +24,10 @@
     "@nuxtjs/pwa": "^3.3.5",
     "core-js": "^3.23.4",
     "nuxt": "^2.15.8",
-    "vue": "^2.7.4",
+    "vue": "^2.7.5",
     "vue-money-format": "^1.2.4",
     "vue-server-renderer": "^2.7.4",
-    "vue-template-compiler": "^2.7.4",
+    "vue-template-compiler": "^2.7.5",
     "vuetify": "^2.6.1",
     "vuetify-dialog": "^2.0.17",
     "webpack": "^4.46.0"
