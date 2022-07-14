@@ -53,7 +53,9 @@
 
             <!-- Show MenuItem -->
             <v-container v-if="listItem.type === 'MenuItem'" class="pa-0 ma-0">
-              <v-subheader>{{ listItem.name }}</v-subheader>
+              <v-subheader v-if="listItem.orderItems.length > 1">{{
+                listItem.name
+              }}</v-subheader>
               <v-list-item
                 v-for="subListItem in listItem.orderItems"
                 :key="subListItem.id"
