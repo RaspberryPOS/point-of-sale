@@ -46,12 +46,16 @@
     </v-main>
     <OrderSideBar :show="rightDrawer" />
     <FoodOptionsDialog />
+    <OrderSubmittedDialog />
   </v-app>
 </template>
 
 <script>
+import OrderSubmittedDialog from '~/components/OrderSubmittedDialog.vue'
+import FoodOptionsDialog from '~/components/FoodOptionsDialog.vue'
 export default {
   name: 'DefaultLayout',
+  components: { OrderSubmittedDialog, FoodOptionsDialog },
   data() {
     return {
       clipped: true,
@@ -91,6 +95,19 @@ export default {
     },
     menus() {
       return this.$store.state.menu.menus
+    },
+    currentRoute() {
+      return this.$route.name
+    },
+  },
+  watch: {
+    leftDrawer(newVal) {
+      // Auto open order drawer when left nav drawer closes and on an ordering scren
+      if (!newVal && ['all-foods', 'menu'].includes(this.$route.name))
+        this.rightDrawer = true
+    },
+    currentRoute(newVal) {
+      if (newVal === 'index') this.rightDrawer = false
     },
   },
   async created() {

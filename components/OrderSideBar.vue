@@ -88,12 +88,7 @@
           <strong>Total</strong><v-spacer></v-spacer
           ><strong>
             <MoneyFormat
-              :value="
-                order.reduce(
-                  (partialSum, item) => partialSum + item.totalPrice,
-                  0
-                )
-              "
+              :value="orderTotal"
               locale="en"
               currency-code="USD"
               :subunits-value="false"
@@ -102,11 +97,11 @@
         </v-toolbar>
 
         <!-- Payment Method Selector -->
-        <v-item-group mandatory class="mt-n1">
+        <v-item-group v-model="paymentMethod" mandatory class="mt-n1">
           <v-container>
             <v-row justify="center">
               <v-col>
-                <v-item v-slot="{ active, toggle }">
+                <v-item v-slot="{ active, toggle }" value="Cash">
                   <v-card
                     :color="active ? 'grey lighten-2' : ''"
                     class="d-flex align-center rounded-lg"
@@ -136,7 +131,7 @@
                 </v-item>
               </v-col>
               <v-col>
-                <v-item v-slot="{ active, toggle }">
+                <v-item v-slot="{ active, toggle }" value="Card">
                   <v-card
                     :color="active ? 'grey lighten-2' : ''"
                     class="d-flex align-center rounded-lg"
@@ -191,9 +186,20 @@ export default {
   props: {
     show: Boolean,
   },
+  data() {
+    return {
+      paymentMethod: 'Cash',
+    }
+  },
   computed: {
     order() {
       return this.$store.state.order.items
+    },
+    orderTotal() {
+      return this.order.reduce(
+        (partialSum, item) => partialSum + item.totalPrice,
+        0
+      )
     },
   },
   methods: {
@@ -216,8 +222,86 @@ export default {
     editItem(itemHash) {
       this.$root.$emit('showFoodOptionsDialog', { itemHash })
     },
-    submitOrder() {
-      alert(JSON.stringify(this.order))
+    async submitOrder() {
+      // Helper function to "explode" OptionFood and OptionPrep to OrderItemOption
+      function parseOptions(options) {
+        const orderOpts = []
+        // iterate through each option on the Food
+        options.forEach((option) => {
+          const parsedOpt = {
+            optionId: option.id,
+            totalPrice: option.totalPrice,
+          }
+          orderOpts.push(
+            ...option.prepOpts
+              .filter((opt) => opt.selected)
+              .map((opt) => {
+                const prepOpt = { ...parsedOpt }
+                prepOpt.quantity = opt.quantity
+                prepOpt.optionPrepId = opt.id
+                return prepOpt
+              })
+          )
+          orderOpts.push(
+            ...option.foodOpts
+              .filter((opt) => opt.selected)
+              .map((opt) => {
+                const foodOpt = { ...parsedOpt }
+                foodOpt.quantity = opt.quantity
+                foodOpt.optionFoodId = opt.id
+                return foodOpt
+              })
+          )
+        })
+        return orderOpts
+      }
+      // Create Order data for POST
+      const orderData = {
+        totalPrice: this.orderTotal,
+        paymentMethod: this.paymentMethod,
+        orderItems: [],
+      }
+      // Iterate through copy of order items (so we don't mutate vuex)
+      this.order.forEach((item) => {
+        // If item has .foods, it's a menu item, explode out
+        if ('foods' in item) {
+          item.foods.forEach((food) => {
+            const orderItem = {
+              foodId: food.id,
+              foodNotes: food.notes,
+              menuItemId: item.id,
+              menuItemhash: String(item.hash),
+              totalPrice: item.totalPrice,
+              options: parseOptions(food.options),
+            }
+            orderData.orderItems.push(orderItem)
+          })
+        } else {
+          const orderItem = {
+            foodId: item.id,
+            foodNotes: item.notes,
+            totalPrice: item.totalPrice,
+            options: parseOptions(item.options),
+          }
+          orderData.orderItems.push(orderItem)
+        }
+      })
+
+      const orderRecord = await this.$api.order.create(orderData)
+      // Show order success dialog
+      if (orderRecord.status === 200) {
+        // Show success popup and allow printing (extra) receipts
+        this.$root.$emit('showOrderSubmittedDialog', {
+          order: orderRecord.data,
+        })
+        // Reset things
+        this.$store.commit('order/CLEAR_ORDER')
+        this.paymentMethod = 'Cash'
+      } else {
+        alert('Something went wrong submitting order, try again!')
+        // eslint-disable-next-line no-console
+        console.error(orderRecord)
+      }
     },
   },
 }

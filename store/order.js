@@ -67,7 +67,7 @@ export const actions = {
     if (item.type === 'MenuItem') {
       for (const j in item.foods) {
         for (const i in item.foods[j].options)
-          item.foods[j].options[i].optionsPrice = optionPrice(
+          item.foods[j].options[i].totalPrice = optionPrice(
             rootState,
             item.foods[j].options[i]
           )
@@ -79,7 +79,7 @@ export const actions = {
           (sum, food) =>
             sum +
             food.options.reduce(
-              (partialSum, option) => partialSum + option.optionsPrice,
+              (partialSum, option) => partialSum + option.totalPrice,
               0
             ),
           0
@@ -87,12 +87,12 @@ export const actions = {
     } else {
       // Calculate cost of each selected options
       for (const i in item.options)
-        item.options[i].optionsPrice = optionPrice(rootState, item.options[i])
+        item.options[i].totalPrice = optionPrice(rootState, item.options[i])
       // Calcuate total cost of order item
       item.totalPrice =
         parseFloat(item.price) +
         item.options.reduce(
-          (partialSum, option) => partialSum + option.optionsPrice,
+          (partialSum, option) => partialSum + option.totalPrice,
           0
         )
     }
@@ -105,7 +105,7 @@ export const actions = {
     if (item.type === 'MenuItem') {
       for (const j in item.foods) {
         for (const i in item.foods[j].options)
-          item.foods[j].options[i].optionsPrice = optionPrice(
+          item.foods[j].options[i].totalPrice = optionPrice(
             rootState,
             item.foods[j].options[i]
           )
@@ -117,7 +117,7 @@ export const actions = {
           (sum, food) =>
             sum +
             food.options.reduce(
-              (partialSum, option) => partialSum + option.optionsPrice,
+              (partialSum, option) => partialSum + option.totalPrice,
               0
             ),
           0
@@ -125,12 +125,12 @@ export const actions = {
     } else {
       // Calculate cost of each selected options
       for (const i in item.options)
-        item.options[i].optionsPrice = optionPrice(rootState, item.options[i])
+        item.options[i].totalPrice = optionPrice(rootState, item.options[i])
       // Calcuate total cost of order item
       item.totalPrice =
         parseFloat(item.price) +
         item.options.reduce(
-          (partialSum, option) => partialSum + option.optionsPrice,
+          (partialSum, option) => partialSum + option.totalPrice,
           0
         )
     }

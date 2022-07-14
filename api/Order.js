@@ -21,4 +21,7 @@ export default ($axios) => ({
     }
     return $axios.patch(`${resource}/${id}`, payload)
   },
+  create(order) {
+    return $axios.post(`${resource}`, order)
+  },
 })
