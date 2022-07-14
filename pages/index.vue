@@ -1,7 +1,7 @@
 <template>
   <v-layout>
     <v-container flex style="overflow-x: auto">
-      <v-row col="12">
+      <v-row v-if="ordersOldToNew.length > 0" col="12">
         <v-col
           v-for="(id, index) in ordersOldToNew"
           :key="index"
@@ -10,6 +10,11 @@
           class="d-flex flex-column"
         >
           <OrderCard :order="parsedOrders[id]" />
+        </v-col>
+      </v-row>
+      <v-row v-else>
+        <v-col class="text-h2 mt-7 primary--text text-center">
+          No orders :(
         </v-col>
       </v-row>
     </v-container>
