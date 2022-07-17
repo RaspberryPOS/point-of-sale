@@ -1,141 +1,60 @@
 <template>
-  <v-container class="flex d-flex flex-column">
-    <v-card class="flex d-flex flex-column">
-      <v-card-text :class="[orderStatusColor, 'mb-0 pb-0 white--text']">
-        <v-row>
-          <v-col col="11">
-            <h3>Order</h3>
-            <div class="text-h3 white--text mb-0 pb-0">
-              {{ order.orderNumber }}
-            </div>
-          </v-col>
-          <v-col col="1">
-            <v-btn
-              outlined
-              fab
-              small
-              dark
-              class="float-right"
-              @click="cancelOrder"
-            >
-              <v-icon>mdi-close</v-icon>
-            </v-btn>
-          </v-col>
-        </v-row>
-      </v-card-text>
-
-      <v-card-text
-        :class="[orderStatusColor, 'white--text text-center ma-0 pt-1 pb-1']"
-      >
-        <span class="text-h4 font-weight-bold"
-          ><code>{{ orderAgeString }}</code></span
-        >
-        <div class="font-weight-light">Order Age</div>
-      </v-card-text>
-
-      <v-list
-        two-line
-        class="flex pt-0"
-        style="max-height: 54vh; overflow-y: auto"
-      >
-        <v-list-item-group v-model="orderItemReadyStatus" multiple>
-          <v-container
-            v-for="(listItem, orderListIndex) in orderList"
-            :key="orderListIndex"
-            class="pa-0 ma-0"
+  <v-card class="flex d-flex flex-column">
+    <v-card-text :class="[orderStatusColor, 'mb-0 pb-0 white--text']">
+      <v-row>
+        <v-col col="11">
+          <h3>Order</h3>
+          <div class="text-h3 white--text mb-0 pb-0">
+            {{ order.orderNumber }}
+          </div>
+        </v-col>
+        <v-col col="1">
+          <v-btn
+            outlined
+            fab
+            small
+            dark
+            class="float-right"
+            @click="cancelOrder"
           >
-            <!-- Show Category Header -->
-            <v-subheader
-              v-if="listItem.type === 'Category'"
-              class="grey lighten-2 text-h6"
-              >{{ listItem.text }}</v-subheader
-            >
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-col>
+      </v-row>
+    </v-card-text>
 
-            <!-- Show MenuItem -->
-            <v-container v-if="listItem.type === 'MenuItem'" class="pa-0 ma-0">
-              <v-subheader v-if="listItem.orderItems.length > 1">{{
-                listItem.name
-              }}</v-subheader>
-              <v-list-item
-                v-for="subListItem in listItem.orderItems"
-                :key="subListItem.id"
-                :value="subListItem.id"
-              >
-                <template #default="{ active }">
-                  <v-list-item-action>
-                    <v-checkbox :input-value="active"></v-checkbox>
-                  </v-list-item-action>
+    <v-card-text
+      :class="[orderStatusColor, 'white--text text-center ma-0 pt-1 pb-1']"
+    >
+      <span class="text-h4 font-weight-bold"
+        ><code>{{ orderAgeString }}</code></span
+      >
+      <div class="font-weight-light">Order Age</div>
+    </v-card-text>
 
-                  <v-list-item-content>
-                    <v-list-item-title>{{
-                      subListItem.food.name
-                    }}</v-list-item-title>
-                    <div v-if="subListItem.options">
-                      <div v-for="(opt, key) in subListItem.options" :key="key">
-                        <v-list-item-subtitle class="font-weight-medium">{{
-                          opt.option.name
-                        }}</v-list-item-subtitle>
-                        <v-list-item-subtitle
-                          v-if="opt.optionPrep.length > 0"
-                          class="d-flex text-wrap"
-                          >{{
-                            opt.optionPrep
-                              .map(
-                                (i) =>
-                                  `${i.quantity > 1 ? i.quantity + 'x ' : ''}${
-                                    i.name
-                                  }`
-                              )
-                              .join(', ')
-                          }}</v-list-item-subtitle
-                        >
-                        <v-list-item-subtitle
-                          v-if="opt.optionFood.length > 0"
-                          class="d-flex text-wrap"
-                          >{{
-                            opt.optionFood
-                              .map(
-                                (i) =>
-                                  `${i.quantity > 1 ? i.quantity + 'x ' : ''}${
-                                    i.food.name
-                                  }`
-                              )
-                              .join(', ')
-                          }}</v-list-item-subtitle
-                        >
-                      </div>
-                    </div>
-                    <div v-if="subListItem.foodNotes">
-                      <v-list-item-subtitle
-                        class="font-weight-medium orange--text"
-                        >Special Requests</v-list-item-subtitle
-                      >
-                      <v-list-item-subtitle class="d-flex text-wrap">{{
-                        subListItem.foodNotes
-                      }}</v-list-item-subtitle>
-                    </div>
-                  </v-list-item-content>
-                  <v-list-item-action v-if="subListItem.food.mustBeFired">
-                    <v-icon
-                      :color="
-                        subListItem.fired
-                          ? 'success'
-                          : subListItem.firing
-                          ? 'warning'
-                          : 'grey'
-                      "
-                    >
-                      mdi-fire-circle
-                    </v-icon>
-                  </v-list-item-action>
-                </template>
-              </v-list-item>
-            </v-container>
+    <v-list two-line class="flex pt-0" style="height: 57vh; overflow-y: auto">
+      <v-list-item-group v-model="orderItemReadyStatus" multiple>
+        <v-container
+          v-for="(listItem, orderListIndex) in orderList"
+          :key="orderListIndex"
+          class="pa-0 ma-0"
+        >
+          <!-- Show Category Header -->
+          <v-subheader
+            v-if="listItem.type === 'Category'"
+            class="grey lighten-2 text-h6"
+            >{{ listItem.text }}</v-subheader
+          >
 
-            <!-- Show individual Foods -->
+          <!-- Show MenuItem -->
+          <v-container v-if="listItem.type === 'MenuItem'" class="pa-0 ma-0">
+            <v-subheader v-if="listItem.orderItems.length > 1">{{
+              listItem.name
+            }}</v-subheader>
             <v-list-item
-              v-if="listItem.type === 'Food'"
-              :value="listItem.orderItem.id"
+              v-for="subListItem in listItem.orderItems"
+              :key="subListItem.id"
+              :value="subListItem.id"
             >
               <template #default="{ active }">
                 <v-list-item-action>
@@ -144,13 +63,10 @@
 
                 <v-list-item-content>
                   <v-list-item-title>{{
-                    listItem.orderItem.food.name
+                    subListItem.food.name
                   }}</v-list-item-title>
-                  <div v-if="listItem.orderItem.options">
-                    <div
-                      v-for="(opt, key) in listItem.orderItem.options"
-                      :key="key"
-                    >
+                  <div v-if="subListItem.options">
+                    <div v-for="(opt, key) in subListItem.options" :key="key">
                       <v-list-item-subtitle class="font-weight-medium">{{
                         opt.option.name
                       }}</v-list-item-subtitle>
@@ -184,22 +100,22 @@
                       >
                     </div>
                   </div>
-                  <div v-if="listItem.orderItem.foodNotes">
+                  <div v-if="subListItem.foodNotes">
                     <v-list-item-subtitle
                       class="font-weight-medium orange--text"
                       >Special Requests</v-list-item-subtitle
                     >
                     <v-list-item-subtitle class="d-flex text-wrap">{{
-                      listItem.orderItem.foodNotes
+                      subListItem.foodNotes
                     }}</v-list-item-subtitle>
                   </div>
                 </v-list-item-content>
-                <v-list-item-action v-if="listItem.orderItem.food.mustBeFired">
+                <v-list-item-action v-if="subListItem.food.mustBeFired">
                   <v-icon
                     :color="
-                      listItem.orderItem.fired
+                      subListItem.fired
                         ? 'success'
-                        : listItem.orderItem.firing
+                        : subListItem.firing
                         ? 'warning'
                         : 'grey'
                     "
@@ -209,25 +125,102 @@
                 </v-list-item-action>
               </template>
             </v-list-item>
-
-            <v-divider />
           </v-container>
-        </v-list-item-group>
-      </v-list>
 
-      <v-divider />
+          <!-- Show individual Foods -->
+          <v-list-item
+            v-if="listItem.type === 'Food'"
+            :value="listItem.orderItem.id"
+          >
+            <template #default="{ active }">
+              <v-list-item-action>
+                <v-checkbox :input-value="active"></v-checkbox>
+              </v-list-item-action>
 
-      <v-card-actions>
-        <v-btn
-          x-large
-          block
-          :color="orderComplete ? 'success' : 'primary'"
-          @click="completeOrder"
-          >Complete Order</v-btn
-        >
-      </v-card-actions>
-    </v-card>
-  </v-container>
+              <v-list-item-content>
+                <v-list-item-title>{{
+                  listItem.orderItem.food.name
+                }}</v-list-item-title>
+                <div v-if="listItem.orderItem.options">
+                  <div
+                    v-for="(opt, key) in listItem.orderItem.options"
+                    :key="key"
+                  >
+                    <v-list-item-subtitle class="font-weight-medium">{{
+                      opt.option.name
+                    }}</v-list-item-subtitle>
+                    <v-list-item-subtitle
+                      v-if="opt.optionPrep.length > 0"
+                      class="d-flex text-wrap"
+                      >{{
+                        opt.optionPrep
+                          .map(
+                            (i) =>
+                              `${i.quantity > 1 ? i.quantity + 'x ' : ''}${
+                                i.name
+                              }`
+                          )
+                          .join(', ')
+                      }}</v-list-item-subtitle
+                    >
+                    <v-list-item-subtitle
+                      v-if="opt.optionFood.length > 0"
+                      class="d-flex text-wrap"
+                      >{{
+                        opt.optionFood
+                          .map(
+                            (i) =>
+                              `${i.quantity > 1 ? i.quantity + 'x ' : ''}${
+                                i.food.name
+                              }`
+                          )
+                          .join(', ')
+                      }}</v-list-item-subtitle
+                    >
+                  </div>
+                </div>
+                <div v-if="listItem.orderItem.foodNotes">
+                  <v-list-item-subtitle class="font-weight-medium orange--text"
+                    >Special Requests</v-list-item-subtitle
+                  >
+                  <v-list-item-subtitle class="d-flex text-wrap">{{
+                    listItem.orderItem.foodNotes
+                  }}</v-list-item-subtitle>
+                </div>
+              </v-list-item-content>
+              <v-list-item-action v-if="listItem.orderItem.food.mustBeFired">
+                <v-icon
+                  :color="
+                    listItem.orderItem.fired
+                      ? 'success'
+                      : listItem.orderItem.firing
+                      ? 'warning'
+                      : 'grey'
+                  "
+                >
+                  mdi-fire-circle
+                </v-icon>
+              </v-list-item-action>
+            </template>
+          </v-list-item>
+
+          <v-divider />
+        </v-container>
+      </v-list-item-group>
+    </v-list>
+
+    <v-divider />
+
+    <v-card-actions>
+      <v-btn
+        x-large
+        block
+        :color="orderComplete ? 'success' : 'primary'"
+        @click="completeOrder"
+        >Complete Order</v-btn
+      >
+    </v-card-actions>
+  </v-card>
 </template>
 
 <script>
@@ -396,11 +389,11 @@ export default {
       }
     },
     async completeOrder() {
-      await this.$store.dispatch('submittedOrders/completeOrder', this.order.id)
       this.$dialog.notify.success(
         `Order ${this.order.orderNumber} completed!`,
         { position: 'bottom-left', timeout: 5000 }
       )
+      await this.$store.dispatch('submittedOrders/completeOrder', this.order.id)
     },
   },
 }
