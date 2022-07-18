@@ -59,8 +59,8 @@ export default {
   data() {
     return {
       clipped: true,
-      leftDrawer: true,
-      rightDrawer: true,
+      leftDrawer: false,
+      rightDrawer: false,
       items: [
         {
           icon: 'mdi-order-bool-descending-variant',

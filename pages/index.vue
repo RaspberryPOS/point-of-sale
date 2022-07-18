@@ -12,7 +12,7 @@
           cols="12"
           md="5"
         >
-          <OrderCard :order="parsedOrders[id]" />
+          <OrderCard :order="orders[id]" />
         </v-col>
       </VueHorizontal>
       <v-row v-else>
@@ -25,6 +25,7 @@
 </template>
 
 <script>
+const faye = require('faye')
 export default {
   data() {
     return {}
@@ -34,114 +35,85 @@ export default {
   },
   computed: {
     orders() {
-      return this.$store.state.submittedOrders.orders
-    },
-    parsedOrders() {
-      return JSON.parse(JSON.stringify(this.orders)).reduce(function (
-        result,
-        order,
-        index,
-        array
-      ) {
-        // Parse fields in order to appropriate format first
-        order.orderNumber = String(order.orderNumber).padStart(3, '0')
-        order.createdAt = new Date(order.createdAt)
-        order.completedAt = new Date(order.completedAt)
-        order.totalPrice = parseFloat(order.totalPrice)
-
-        // Iterate over all order items and process to more useful form
-        order.categoryMapping = {} // Create a mappoing of all order categories and which orderItem.id is in each
-        order.menuItemMapping = {} // Create a mapping of all orderItems that are part of the same menuItem (grouping of multiple foods in a single order-able selection)
-        order.orderToMenuItemHashMap = {} // Hold the "inverse" of .menuItemMapping {orderId: menuItemhash}
-        order.singleItemMapping = [] // Create a list of all IDs that aren't part of a menuItem (a-la-cart items)
-        order.orderIdIndex = {}
-
-        for (const [index, item] of order.orderItems.entries()) {
-          // Note index of OrderItem.id
-          order.orderIdIndex[item.id] = index
-          // Find orderItem category and store in Category mapping
-          const orderCategory = item.menuItem?.category
-            ? item.menuItem.category
-            : item.food?.category
-            ? item.food.category
-            : 'Other'
-          if (orderCategory in order.categoryMapping)
-            order.categoryMapping[orderCategory].push(item.id)
-          else order.categoryMapping[orderCategory] = [item.id]
-
-          // Find orderItems part of a menuItem and the same menuItemhash and note
-          if (item.menuItemhash && item.menuItem) {
-            order.orderToMenuItemHashMap[item.id] = item.menuItemhash
-            if (item.menuItemhash in order.menuItemMapping)
-              order.menuItemMapping[item.menuItemhash].orderItemIds.push(
-                item.id
-              )
-            else
-              order.menuItemMapping[item.menuItemhash] = {
-                menuItem: item.menuItem,
-                orderItemIds: [item.id],
-              }
-          } else {
-            order.singleItemMapping.push(item.id)
-          }
-
-          // simplifiy options
-          const optionsTemp = {}
-          for (const option of item.options) {
-            // Add quantity to optionFood/optionPrep
-            if (option.optionFood) option.optionFood.quantity = option.quantity
-            if (option.optionPrep) option.optionPrep.quantity = option.quantity
-
-            // Check if Option ID already in new Options Object
-            if (option.option.id in optionsTemp) {
-              // Add new optionFood/optionPrep and sort by name
-              if (option.optionFood)
-                optionsTemp[option.option.id].optionFood.push(option.optionFood)
-              if (option.optionPrep)
-                optionsTemp[option.option.id].optionPrep.push(option.optionPrep)
-              // Sort by name
-              optionsTemp[option.option.id].optionFood.sort((a, b) =>
-                a.food.name > b.food.name ? 1 : -1
-              )
-              optionsTemp[option.option.id].optionPrep.sort((a, b) =>
-                a.name > b.name ? 1 : -1
-              )
-            } else {
-              // Create new object to represent options
-              optionsTemp[option.option.id] = {
-                option: option.option,
-                optionFood: [],
-                optionPrep: [],
-              }
-              if (option.optionFood)
-                optionsTemp[option.option.id].optionFood.push(option.optionFood)
-              if (option.optionPrep)
-                optionsTemp[option.option.id].optionPrep.push(option.optionPrep)
-            }
-          }
-          item.options = optionsTemp
-
-          // remove now un-needed keys
-          delete item.menuItem
-          delete item.menuItemhash
-        }
-
-        // Done!
-        result[order.id] = order
-        return result
-      },
-      {})
+      return this.$store.state.orders.orders
     },
     ordersOldToNew() {
-      return Object.keys(this.parsedOrders).sort(
-        (a, b) =>
-          this.parsedOrders[a].createdAt - this.parsedOrders[b].createdAt
+      return Object.keys(this.orders).sort(
+        (a, b) => this.orders[a].createdAt - this.orders[b].createdAt
       )
     },
   },
   watch: {},
-  async created(ctx) {
-    await this.$store.dispatch('submittedOrders/getOrders')
+  async mounted(ctx) {
+    // Get Orders from backend
+    await this.$store.dispatch('orders/getOrders')
+    // Setup Faye listeners
+    const fayeClient = new faye.Client('http://localhost:8080/faye')
+
+    // Listen for order patches (cancelled or complete) and remove and alert cook
+    fayeClient.subscribe('/order/patch', (order) => {
+      if (order.complete || order.cancelled) {
+        this.$store.commit('orders/REMOVE_ORDER', order.id)
+        // Alert cook
+        if (order.complete) {
+          this.$dialog.notify.success(
+            `Order ${String(order.orderNumber).padStart(3, '0')} completed!`,
+            { position: 'top-left', timeout: 5000 }
+          )
+        } else {
+          this.$dialog.notify.error(
+            `Order ${String(order.orderNumber).padStart(3, '0')} cancelled!`,
+            { position: 'top-left', timeout: 0 }
+          )
+        }
+      }
+    })
+
+    // Listen for new orders (/order/post)
+    fayeClient.subscribe('/order/post', (order) => {
+      // Alert cook
+      this.$dialog.notify.info(
+        `New order (${String(order.orderNumber).padStart(3, '0')}) received!`,
+        { position: 'top-left', timeout: 5000 }
+      )
+      // Add order to store
+      this.$store.dispatch('orders/addOrder', order)
+    })
+
+    // Listen for orderItem changes
+    // firing, fired, ready
+    fayeClient.subscribe('/orderItem/patch', (orderItem) => {
+      this.$store.commit('orders/CHANGE_ORDERITEM_STATUS', {
+        orderId: orderItem.orderId,
+        orderItemId: orderItem.id,
+        key: 'fired',
+        value: orderItem.fired,
+      })
+      this.$store.commit('orders/CHANGE_ORDERITEM_STATUS', {
+        orderId: orderItem.orderId,
+        orderItemId: orderItem.id,
+        key: 'firedTime',
+        value: orderItem.firedTime,
+      })
+      this.$store.commit('orders/CHANGE_ORDERITEM_STATUS', {
+        orderId: orderItem.orderId,
+        orderItemId: orderItem.id,
+        key: 'firing',
+        value: orderItem.firing,
+      })
+      this.$store.commit('orders/CHANGE_ORDERITEM_STATUS', {
+        orderId: orderItem.orderId,
+        orderItemId: orderItem.id,
+        key: 'firingTime',
+        value: orderItem.firingTime,
+      })
+      this.$store.commit('orders/CHANGE_ORDERITEM_STATUS', {
+        orderId: orderItem.orderId,
+        orderItemId: orderItem.id,
+        key: 'ready',
+        value: orderItem.ready,
+      })
+    })
   },
   methods: {},
 }

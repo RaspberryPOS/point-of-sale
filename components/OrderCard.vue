@@ -32,7 +32,7 @@
       <div class="font-weight-light">Order Age</div>
     </v-card-text>
 
-    <v-list two-line class="flex pt-0" style="height: 57vh; overflow-y: auto">
+    <v-list two-line class="flex pt-0" style="height: 63vh; overflow-y: auto">
       <v-list-item-group v-model="orderItemReadyStatus" multiple>
         <v-container
           v-for="(listItem, orderListIndex) in orderList"
@@ -331,10 +331,10 @@ export default {
         // Dispatch changes to make OrderItems not ready
         if (itemsMarkedNotReady.length > 0) {
           await Promise.all(
-            itemsMarkedNotReady.map(async (orderItemId) => {
-              await this.$store.dispatch(
-                'submittedOrders/changeOrderItemStatus',
-                { orderItemId, readyStatus: false }
+            itemsMarkedNotReady.map((orderItemId) => {
+              return this.$api.orderItem.setOrderItemReadyStatus(
+                orderItemId,
+                false
               )
             })
           )
@@ -342,10 +342,10 @@ export default {
         // Dispatch changes to make OrderItems ready
         if (itemsMarkedReady.length > 0) {
           await Promise.all(
-            itemsMarkedReady.map(async (orderItemId) => {
-              await this.$store.dispatch(
-                'submittedOrders/changeOrderItemStatus',
-                { orderItemId, readyStatus: true }
+            itemsMarkedReady.map((orderItemId) => {
+              return this.$api.orderItem.setOrderItemReadyStatus(
+                orderItemId,
+                true
               )
             })
           )
@@ -381,19 +381,11 @@ export default {
         },
       })
       if (confirm) {
-        await this.$store.dispatch('submittedOrders/cancelOrder', this.order.id)
-        this.$dialog.notify.info(`Order ${this.order.orderNumber} cancelled`, {
-          position: 'bottom-left',
-          timeout: 5000,
-        })
+        return await this.$api.order.cancel(this.order.id)
       }
     },
     async completeOrder() {
-      this.$dialog.notify.success(
-        `Order ${this.order.orderNumber} completed!`,
-        { position: 'bottom-left', timeout: 5000 }
-      )
-      await this.$store.dispatch('submittedOrders/completeOrder', this.order.id)
+      return await this.$api.order.complete(this.order.id)
     },
   },
 }
