@@ -38,7 +38,7 @@
       </v-toolbar-title>
       <v-spacer />
       <v-btn icon @click.stop="rightDrawer = !rightDrawer">
-        <v-icon>mdi-receipt</v-icon>
+        <v-icon>mdi-receipt-text-outline</v-icon>
       </v-btn>
     </v-app-bar>
     <v-main>
